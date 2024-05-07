@@ -1,9 +1,12 @@
 from flask import Flask, request, Response
 from flask_pymongo import PyMongo
 from collections import OrderedDict
+from flask_cors import CORS
 import json
 
 app = Flask(__name__)
+CORS(app)
+
 app.config["MONGO_URI"] = "mongodb://localhost:27017/users_db"
 mongo = PyMongo(app)
 
@@ -36,5 +39,5 @@ def get_dish():
         return Response(json.dumps({"error": "Please provide a dishname parameter"}), content_type='application/json')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,port=3000)
 
