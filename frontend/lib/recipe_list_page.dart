@@ -15,7 +15,7 @@ class RecipeListPage extends StatefulWidget {
 }
 
 class _RecipeListPageState extends State<RecipeListPage> {
-  List<Recipe> recipes = [];
+  List<Recipe> recipes = []; // Initialize with an empty list
 
   @override
   void initState() {
@@ -26,13 +26,15 @@ class _RecipeListPageState extends State<RecipeListPage> {
   Future<void> fetchRecipes() async {
     final response = await http.get(
       Uri.parse(
-          'http://127.0.0.1:3000/get_dish?dishName=${widget.dishName ?? ''}'),
+        'http://127.0.0.1:3000/get_dish?dishName=${widget.dishName ?? ''}',
+      ),
     );
 
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       setState(() {
         recipes = data.map((e) => Recipe.fromJson(e)).toList();
+        print(recipes);
       });
     } else {
       throw Exception('Failed to load recipes');
@@ -45,24 +47,25 @@ class _RecipeListPageState extends State<RecipeListPage> {
       appBar: AppBar(
         title: Text('Recipes'),
       ),
-      body: ListView.builder(
-        itemCount: recipes.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(recipes[index].title),
-            leading: Image.network(recipes[index].image),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      RecipeDetailsPage(recipe: recipes[index]),
-                ),
-              );
-            },
-          );
-        },
-      ),
+      body: recipes.isEmpty // Check if recipes list is empty
+          ? Center(child: CircularProgressIndicator()) // Show loading indicator
+          : ListView.builder(
+              itemCount: recipes.length,
+              itemBuilder: (context, index) {
+                final recipe = recipes[index];
+                return ListTile(
+                  title: Text(recipe.title),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecipeDetailsPage(recipe: recipe),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }

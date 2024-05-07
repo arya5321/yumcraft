@@ -10,10 +10,22 @@ CORS(app)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/users_db"
 mongo = PyMongo(app)
 
+from flask import Flask, request, Response
+from flask_pymongo import PyMongo
+from collections import OrderedDict
+import json
+
+app = Flask(__name__)
+app.config["MONGO_URI"] = "mongodb://localhost:27017/users_db"
+mongo = PyMongo(app)
+
 def order_dish(dish):
+    # Split the ingredients string into a list of ingredients
+    ingredients_list = [ingredient.strip() for ingredient in dish.get('ingredients', '').split(';')]
+    
     return OrderedDict([
         ('title', dish.get('title', '')),
-        ('ingredients', dish.get('ingredients', '')),
+        ('ingredients', ingredients_list),  # Ensure ingredients is a list
         ('directions', dish.get('directions', '')),
         ('total_time', dish.get('total_time', '')),
         ('calories', str(dish.get('calories', ''))),
@@ -21,7 +33,7 @@ def order_dish(dish):
         ('sugars_g', str(dish.get('sugars_g', ''))),
         ('fat_g', str(dish.get('fat_g', ''))),
         ('protein_g', str(dish.get('protein_g', ''))),
-        ('image', dish.get('image', ''))  # Add image URL to the response
+        ('image', dish.get('image', ''))
     ])
 
 @app.route("/get_dish", methods=["GET"])
@@ -37,6 +49,7 @@ def get_dish():
             return Response(json.dumps({"error": f"No recipes found containing '{dish_name}'"}), content_type='application/json')
     else:
         return Response(json.dumps({"error": "Please provide a dishname parameter"}), content_type='application/json')
+
 
 if __name__ == "__main__":
     app.run(debug=True,port=3000)
