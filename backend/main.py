@@ -6,18 +6,9 @@ import json
 
 app = Flask(__name__)
 CORS(app)
-
 app.config["MONGO_URI"] = "mongodb://localhost:27017/users_db"
 mongo = PyMongo(app)
 
-from flask import Flask, request, Response
-from flask_pymongo import PyMongo
-from collections import OrderedDict
-import json
-
-app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/users_db"
-mongo = PyMongo(app)
 
 def order_dish(dish):
     # Split the ingredients string into a list of ingredients
