@@ -55,6 +55,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
                 final recipe = recipes[index];
                 return ListTile(
                   title: Text(recipe.title),
+                  leading: Image.network(recipes[index].image),
                   onTap: () {
                     Navigator.push(
                       context,
